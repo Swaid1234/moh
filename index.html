@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام الحضور والانصراف - المشاعر المقدسة</title>
     <style>
-        /* إعدادات الخلفية العامة */
+        /* إعدادات الخلفية العامة المتوافقة مع الوضع الداكن */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             /* ضع رابط صورتك الخلفية هنا بدلاً من الرابط التجريبي بالأسفل */
@@ -19,154 +19,189 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            background-color: #0b0c10; /* لون احتياطي داكن جداً */
         }
 
-        /* طبقة داكنة فوق الصورة لضمان وضوح النصوص */
+        /* طبقة داكنة عميقة فوق الصورة لتعزيز الهوية البصرية للـ Dark Mode */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.45);
+            background: radial-gradient(circle, rgba(10, 11, 14, 0.5) 0%, rgba(10, 11, 14, 0.85) 100%);
             z-index: 1;
         }
 
-        /* حاوية التصميم الرئيسية مع تأثيرات الانتقال والظهور */
+        /* حاوية التصميم الفاخرة بالوضع الداكن الزجاجي (Dark Glassmorphism) */
         .container {
             position: relative;
             z-index: 2;
-            background-color: rgba(255, 255, 255, 0.94); 
-            padding: 40px 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+            background: rgba(20, 22, 26, 0.65); /* رمادي كربوني غامق وشبه شفاف */
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.07); /* حد ناعم جداً ومضيء */
+            padding: 45px 35px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1);
             text-align: center;
             max-width: 400px;
             width: 90%;
-            /* تأثير الحركة عند التحميل الأول للبطاقة */
-            animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         h2 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 26px;
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 28px;
             font-weight: 700;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         p {
-            color: #666;
+            color: rgba(255, 255, 255, 0.6);
             font-size: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             line-height: 1.6;
         }
 
-        /* التحكم في الصفحات مع إضافة تأثير حركة خاص بكل صفحة عند تفعيلها */
+        /* التحكم في الصفحات والحركات */
         #page-1 { display: block; }
         #page-2 { display: none; }
 
         .fade-active {
-            animation: fadeInScale 0.5s ease-out forwards;
+            animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .btn-vertical, .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 20px;
         }
         
         .btn-group {
             flex-direction: row;
         }
 
-        /* التصميم الأساسي للأزرار مع الترانزميشن النظيف */
+        /* الأزرار بالوضع الداكن الفخم والمستقبلي */
         .btn {
-            color: white;
-            border: none;
-            padding: 15px;
-            font-size: 18px;
-            border-radius: 12px;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            font-size: 17px;
+            border-radius: 16px;
             cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            /* الترانزميشن هنا يجعل الحركة ناعمة عند مرور الفأرة وضغط الزر */
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             top: 0;
         }
 
-        /* تفاعل الأزرار عند الحركية (Hover) */
+        /* تأثير التمرير واللمعان للأزرار (Hover) */
         .btn:hover {
-            top: -4px; /* يرتفع الزر قليلاً للأعلى */
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25); /* تعميق الظل */
-            transform: scale(1.02); /* تكبير خفيف جداً */
+            top: -4px;
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* تفاعل الأزرار عند الضغط الفعلي (Click) */
         .btn:active {
             top: -1px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             transform: scale(0.99);
         }
 
-        /* ألوان أزرار المشاعر */
-        .btn-arfa { background: linear-gradient(135deg, #1abc9c, #16a085); }
-        .btn-mina { background: linear-gradient(135deg, #3498db, #2980b9); }
-        
-        /* ألوان أزرار الإجراءات */
-        .btn-attendance { background: linear-gradient(135deg, #2ecc71, #27ae60); flex: 1; }
-        .btn-departure { background: linear-gradient(135deg, #e67e22, #d35400); flex: 1; }
+        /* تدرجات داكنة مخصصة للمشاعر (عرفة ومنى) */
+        .btn-arfa { 
+            background: linear-gradient(135deg, #1f2833, #12161c); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        .btn-arfa:hover { 
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.25); 
+            color: #00b4d8; /* توهج أزرق خفيف عند التمرير */
+        }
 
-        /* رسائل الحالة مع حركات تنبيهية */
+        .btn-mina { 
+            background: linear-gradient(135deg, #1f2833, #12161c); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        .btn-mina:hover { 
+            box-shadow: 0 10px 25px rgba(114, 9, 183, 0.25); 
+            color: #7209b7; /* توهج بنفسجي خفيف عند التمرير */
+        }
+        
+        /* تدرجات حيوية وفخمة لأزرار الحضور والانصراف بالصفحة الثانية */
+        .btn-attendance { 
+            background: linear-gradient(135deg, #0f4c5c, #00b4d8); 
+            flex: 1; 
+        }
+        .btn-attendance:hover { box-shadow: 0 10px 25px rgba(0, 180, 216, 0.4); }
+
+        .btn-departure { 
+            background: linear-gradient(135deg, #6f1d1b, #bb3e03); 
+            flex: 1; 
+        }
+        .btn-departure:hover { box-shadow: 0 10px 25px rgba(187, 62, 3, 0.4); }
+
+        /* ستايل زر الرجوع بالوضع الداكن */
+        .btn-back {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 15px;
+            padding: 12px;
+            font-size: 14px;
+            box-shadow: none;
+            border-radius: 12px;
+        }
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: none;
+        }
+
+        /* رسائل الحالة مع توهج النيون المناسب للوضع الداكن */
         #status-message {
             margin-top: 25px;
             font-size: 15px;
-            color: #34495e;
-            font-weight: bold;
+            color: rgba(255,255,255,0.7);
+            font-weight: 500;
             min-height: 24px;
             transition: all 0.3s ease;
         }
         
         .error-text { 
-            color: #e74c3c !important; 
-            animation: shake 0.4s ease-in-out; /* حركة اهتزاز خفيفة عند الخطأ */
+            color: #ff4d4d !important; 
+            text-shadow: 0 0 15px rgba(255, 77, 77, 0.5);
+            animation: shake 0.4s ease-in-out; 
         }
         
         .loading-text { 
-            color: #3498db !important; 
+            color: #00b4d8 !important; 
+            text-shadow: 0 0 15px rgba(0, 180, 216, 0.4);
         }
         
+        /* بادج أنيق للموقع النشط */
         .location-badge {
             display: inline-block;
-            background: #34495e;
-            color: white;
-            padding: 6px 18px;
-            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00b4d8;
+            padding: 6px 20px;
+            border-radius: 30px;
             font-size: 14px;
             margin-bottom: 25px;
             font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.2);
         }
 
-        /* ================= مفاتيح حركات الـ Animation ================= */
+        /* مفاتيح الحركات الرياضية */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes shake {
@@ -202,6 +237,8 @@
             <button class="btn btn-attendance" onclick="redirectToForm('attendance')">تسجيل حضور</button>
             <button class="btn btn-departure" onclick="redirectToForm('departure')">تسجيل انصراف</button>
         </div>
+
+        <button class="btn btn-back" onclick="goBack()">رجوع للخلف</button>
     </div>
 
 </div>
@@ -211,11 +248,11 @@
     // 1. إعدادات الإحداثيات اليدوية (عرفة ومنى)
     // ========================================================
     const LOCATIONS = [
-        { name: "مشعر عرفة", lat: 21.338251, lng:39.994099  }, 
+        { name: "مشعر عرفة", lat: 21.338251, lng:39.994099 }, 
         { name: "مشعر منى", lat: 21.41619632962374, lng:39.88574198075799 }   
     ];
 
-    const ALLOWED_RADIUS = 500000000; // النطاق المسموح بالمتر
+    const ALLOWED_RADIUS = 50000000; // النطاق المسموح بالمتر
 
     // ========================================================
     // 2. روابط قوقل فورم
@@ -251,14 +288,12 @@
                 if (distance <= ALLOWED_RADIUS) {
                     statusDiv.innerHTML = "";
                     
-                    // التبديل بين الصفحات بجمالية كلاسيكية وسلسة
                     page1.style.display = "none";
                     page2.style.display = "block";
-                    page2.classList.add("fade-active"); // تفعيل حركية الظهور للصفحة الثانية
+                    page2.classList.add("fade-active"); 
                     
                     activeLocationBadge.innerHTML = `الموقع الحالي المعتمد: ${targetLocation.name}`;
                 } else {
-                    // تشغيل حركة الاهتزاز عند الخطأ لتنبيه المستخدم بصرياً
                     statusDiv.className = "error-text";
                     statusDiv.innerHTML = `عذراً، أنت لست في النطاق الجغرافي لـ ${targetLocation.name}.`;
                 }
@@ -279,6 +314,17 @@
         );
     }
 
+    function goBack() {
+        page2.style.display = "none";
+        page2.classList.remove("fade-active");
+        
+        page1.style.display = "block";
+        page1.classList.add("fade-active");
+        
+        statusDiv.innerHTML = "";
+        statusDiv.className = "";
+    }
+
     function redirectToForm(action) {
         if (action === 'attendance') {
             window.location.replace(ATTENDANCE_FORM_URL);
@@ -287,7 +333,6 @@
         }
     }
 
-    // دالة حساب المسافة (Haversine)
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371e3; 
         const phi1 = lat1 * Math.PI / 180;
