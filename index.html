@@ -3,86 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الحضور والانصراف - مشاعر مقدسة</title>
+    <title>نظام الحضور والانصراف - المشاعر المقدسة</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            /* ------------------------------------------------------- */
+            /* ضع رابط صورتك الخلفية هنا بدلاً من الرابط التجريبي بالأسفل */
+            background-image: url('https://haj.gov.sa/_next/image?url=https%3A%2F%2Fhaj.gov.sa%2Fs-core%2F-%2Fmedia%2FProject%2FHAJJ%2FIMAGES%2FHAJJ-Season%2F33.png%3Fh%3D1964%26iar%3D0%26w%3D5760%26hash%3D38E198558D91D8FE53D5DE53EA558C8B&w=3840&q=75'); 
+            /* ------------------------------------------------------- */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
+        /* خلفية داكنة خفيفة فوق الصورة لتحسين وضوح النص */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
         .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.92); /* حاوية بيضاء شبه شفافة أنيقة */
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             text-align: center;
             max-width: 400px;
-            width: 100%;
+            width: 90%;
         }
         h2 {
-            color: #333;
-            margin-bottom: 20px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 24px;
         }
-        /* إعدادات صفحة الفحص الأولية */
-        #checking-page {
-            display: block; /* تظهر أولاً */
+        p {
+            color: #555;
+            font-size: 15px;
+            margin-bottom: 25px;
         }
-        /* إعدادات صفحة الأزرار (مخفية في البداية) */
-        #portal-page {
-            display: none; 
+        /* إعدادات الصفحات */
+        #page-1 { display: block; } /* تظهر أولاً */
+        #page-2 { display: none; }  /* مخفية في البداية */
+
+        .btn-vertical, .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            flex-direction: row;
         }
         .btn {
             color: white;
             border: none;
             padding: 14px;
             font-size: 18px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            flex: 1;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .btn-attendance {
-            background-color: #2ecc71;
-        }
-        .btn-attendance:hover {
-            background-color: #27ae60;
-        }
-        .btn-departure {
-            background-color: #e67e22;
-        }
-        .btn-departure:hover {
-            background-color: #d35400;
-        }
+        /* ألوان أزرار الصفحة الأولى (المشاعر) */
+        .btn-arfa { background-color: #16a085; }
+        .btn-arfa:hover { background-color: #117a65; }
+        .btn-mina { background-color: #2980b9; }
+        .btn-mina:hover { background-color: #2471a3; }
+        
+        /* ألوان أزرار الصفحة الثانية (الإجراءات) */
+        .btn-attendance { background-color: #2ecc71; flex: 1; }
+        .btn-attendance:hover { background-color: #27ae60; }
+        .btn-departure { background-color: #e67e22; flex: 1; }
+        .btn-departure:hover { background-color: #d35400; }
+
         #status-message {
             margin-top: 20px;
-            font-size: 16px;
-            color: #3498db;
+            font-size: 15px;
+            color: #34495e;
             font-weight: bold;
+            min-height: 24px;
         }
-        .error-text {
-            color: #e74c3c !important;
-        }
-        .success-text {
-            color: #27ae60 !important;
-        }
+        .error-text { color: #e74c3c !important; }
+        .loading-text { color: #3498db !important; }
+        
         .location-badge {
             display: inline-block;
             background-color: #34495e;
             color: white;
-            padding: 5px 15px;
+            padding: 6px 16px;
             border-radius: 20px;
             font-size: 14px;
-            margin-top: 10px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -90,18 +109,23 @@
 
 <div class="container">
     
-    <!-- 1. صفحة الفحص التلقائي عند الدخول -->
-    <div id="checking-page">
-        <h2>بوابة التحقق من الموقع</h2>
-        <p>جاري فحص تواجدك في النطاق الجغرافي لـ (عرفة / منى)...</p>
-        <div id="status-message">الرجاء السماح بصلاحية الـ GPS إذا طُلبت منك...</div>
+    <!-- ================= الصفحة الأولى: اختيار المشعر ================= -->
+    <div id="page-1">
+        <h2>بوابة التحقق الجغرافي</h2>
+        <p>يرجى اختيار مشعر تواجدك الحالي للتحقق تلقائياً:</p>
+        
+        <div class="btn-vertical">
+            <button class="btn btn-arfa" onclick="selectLocation(0)">مشعر عرفة</button>
+            <button class="btn btn-mina" onclick="selectLocation(1)">مشعر منى</button>
+        </div>
+        <div id="status-message"></div>
     </div>
 
-    <!-- 2. صفحة الحضور والانصراف (تفتح فقط بعد نجاح الفحص) -->
-    <div id="portal-page">
-        <h2>أهلاً بك في نظام التحضير</h2>
-        <div id="location-name" class="location-badge"></div>
-        <p style="margin-top: 15px;">اضغط على الخيار المطلوب لتسجيل الحضور أو الانصراف فوراً:</p>
+    <!-- ================= الصفحة الثانية: الحضور والانصراف ================= -->
+    <div id="page-2">
+        <h2>بوابة التحضير الرقمية</h2>
+        <div id="active-location" class="location-badge"></div>
+        <p>اختر الإجراء المطلوب ليتم تسجيلك فوراً:</p>
         
         <div class="btn-group">
             <button class="btn btn-attendance" onclick="redirectToForm('attendance')">تسجيل حضور</button>
@@ -113,76 +137,69 @@
 
 <script>
     // ========================================================
-    // 1. إعدادات الإحداثيات اليدوية (إحداثيات عرفة ومحيط منى)
+    // 1. إعدادات الإحداثيات اليدوية (عرفة ومنى)
     // ========================================================
     const LOCATIONS = [
-        { name: "مشعر عرفة", lat:  21.338251, lng:39.994099  }, // يمكنك تعديل الإحداثيات الدقيقة لمقرك هنا
-        { name: "مشعر منى", lat: 21.41619632962374, lng:39.88574198075799 }   // يمكنك تعديل الإحداثيات الدقيقة لمقرك هنا
+        { name: "مشعر عرفة", lat:21.338251, lng:39.994099 }, // موقع 0 (عرفة)
+        { name: "مشعر منى", lat:21.41619632962374, lng:39.88574198075799 }   // موقع 1 (منى)
     ];
 
-    const ALLOWED_RADIUS = 3000; // المسافة المسموحة بالمتر (مثلاً 500 متر لضمان تغطية جيدة في المشاعر)
+    const ALLOWED_RADIUS = 500; // المسافة المسموحة بالمتر حول الإحداثيات
 
     // ========================================================
-    // 2. روابط قوقل فورم
+    // 2. روابط قوقل فورم الخاصة بك
     // ========================================================
     const ATTENDANCE_FORM_URL = "https://forms.gle/6pUtD5bcLRYJV18Z8";
     const DEPARTURE_FORM_URL = "https://forms.gle/Hn2ysDaE5TP6pwn17";
     // ========================================================
 
     const statusDiv = document.getElementById('status-message');
-    const checkingPage = document.getElementById('checking-page');
-    const portalPage = document.getElementById('portal-page');
-    const locationBadge = document.getElementById('location-name');
+    const page1 = document.getElementById('page-1');
+    const page2 = document.getElementById('page-2');
+    const activeLocationBadge = document.getElementById('active-location');
 
-    // تشغيل الفحص تلقائياً بمجرد فتح الصفحة
-    window.onload = function() {
-        startAutomaticCheck();
-    };
+    // الدالة التي تنطلق عند اختيار مشعر من الصفحة الأولى
+    function selectLocation(index) {
+        const targetLocation = LOCATIONS[index];
 
-    function startAutomaticCheck() {
         if (!navigator.geolocation) {
             statusDiv.className = "error-text";
-            statusDiv.innerHTML = "متصفحك لا يدعم خاصية تحديد الموقع الجغرافي.";
+            statusDiv.innerHTML = "متصفحك لا يدعم نظام تحديد المواقع الجغرافية.";
             return;
         }
 
-        // طلب الموقع تلقائياً وبأعلى دقة
+        statusDiv.className = "loading-text";
+        statusDiv.innerHTML = `جاري مطابقة إحداثياتك مع [${targetLocation.name}]...`;
+
+        // طلب الـ GPS للتحقق
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude;
-                let insideAnyLocation = false;
-                let detectedLocationName = "";
 
-                // مطابقة موقع الموظف مع عرفة أو منى
-                for (let i = 0; i < LOCATIONS.length; i++) {
-                    const distance = calculateDistance(userLat, userLng, LOCATIONS[i].lat, LOCATIONS[i].lng);
-                    if (distance <= ALLOWED_RADIUS) {
-                        insideAnyLocation = true;
-                        detectedLocationName = LOCATIONS[i].name;
-                        break; 
-                    }
-                }
+                // حساب المسافة بين الموظف والمشعر الذي اختاره فقط
+                const distance = calculateDistance(userLat, userLng, targetLocation.lat, targetLocation.lng);
 
-                if (insideAnyLocation) {
-                    // إذا كان بالموقع: اخفِ صفحة الفحص واظهر صفحة الحضور والانصراف فوراً
-                    checkingPage.style.display = "none";
-                    portalPage.style.display = "block";
-                    locationBadge.innerHTML = `موقعك الحالي: ${detectedLocationName}`;
+                if (distance <= ALLOWED_RADIUS) {
+                    // تطابق ناجح: إخفاء الصفحة الأولى وإظهار الصفحة الثانية فوراً
+                    statusDiv.innerHTML = "";
+                    page1.style.display = "none";
+                    page2.style.display = "block";
+                    activeLocationBadge.innerHTML = `الموقع الحالي المتأصل منه: ${targetLocation.name}`;
                 } else {
-                    // إذا كان خارج النطاق
+                    // فشل التطابق الجغرافي
                     statusDiv.className = "error-text";
-                    statusDiv.innerHTML = "عذراً، أنت خارج النطاق الجغرافي المسموح به لـ (عرفة / منى). لا يمكنك التحضير.";
+                    statusDiv.innerHTML = `عذراً، نظام الـ GPS يوضح أنك لست متواجداً في نطاق ${targetLocation.name}.`;
                 }
-            }, 
+            },
             function(error) {
                 statusDiv.className = "error-text";
                 if (error.code === error.PERMISSION_DENIED) {
-                    statusDiv.innerHTML = "يجب إعطاء صلاحية الـ GPS للمتصفح لتتمكن المنظومة من التحقق والدخول.";
+                    statusDiv.innerHTML = "فضلاً، قم بالسماح للمتصفح بالوصول للـ GPS لإتمام التحقق.";
                 } else {
-                    statusDiv.innerHTML = "فشل تحديد موقعك، تأكد من تفعيل الـ GPS في جهازك وتحديث الصفحة.";
+                    statusDiv.innerHTML = "فشل التقاط الإحداثيات. تأكد من تشغيل الموقع بجهازك.";
                 }
-            }, 
+            },
             {
                 enableHighAccuracy: true,
                 timeout: 10000,
@@ -191,7 +208,7 @@
         );
     }
 
-    // دالة التوجيه الفوري عند ضغط زر حضور أو انصراف
+    // التوجيه الفوري المباشر في الصفحة الثانية
     function redirectToForm(action) {
         if (action === 'attendance') {
             window.location.replace(ATTENDANCE_FORM_URL);
