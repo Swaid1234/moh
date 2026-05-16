@@ -9,7 +9,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             /* ضع رابط صورتك الخلفية هنا بدلاً من الرابط التجريبي بالأسفل */
-            background-image: url('https://haj.gov.sa/_next/image?url=https%3A%2F%2Fhaj.gov.sa%2Fs-core%2F-%2Fmedia%2FProject%2FHAJJ%2FIMAGES%2FHAJJ-Season%2F33.png%3Fh%3D1964%26iar%3D0%26w%3D5760%26hash%3D38E198558D91D8FE53D5DE53EA558C8B&w=3840&q=75'); 
+            background-image: url('https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=1200'); 
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -207,22 +207,23 @@
 </div>
 
 <script>
-    ========================================================
-    // 1. إعدادات المواقع اليدوية (ضع إحداثياتك هنا)
+    // ========================================================
+    // 1. إعدادات الإحداثيات اليدوية (عرفة ومنى)
     // ========================================================
     const LOCATIONS = [
-        { name: "الموقع الأول", lat: 21.415844, 39.886327 }, 
-        { name: "الموقع الثاني", lat: 21.3382510, lng:39.9940990}   
+        { name: "مشعر عرفة", lat: 21.338251, lng:39.994099  }, 
+        { name: "مشعر منى", lat: 21.41619632962374, lng:39.88574198075799 }   
     ];
 
-    const ALLOWED_RADIUS = 3000; // المسافة المسموحة بالمتر
+    const ALLOWED_RADIUS = 5000; // النطاق المسموح بالمتر
 
     // ========================================================
-    // 2. روابط قوقل فورم (استبدل الروابط الوهمية بروابطك الفعالة)
+    // 2. روابط قوقل فورم
     // ========================================================
     const ATTENDANCE_FORM_URL = "https://forms.gle/6pUtD5bcLRYJV18Z8";
     const DEPARTURE_FORM_URL = "https://forms.gle/Hn2ysDaE5TP6pwn17";
     // ========================================================
+
     const statusDiv = document.getElementById('status-message');
     const page1 = document.getElementById('page-1');
     const page2 = document.getElementById('page-2');
@@ -304,4 +305,4 @@
 </script>
 
 </body>
-</html>  
+</html>
