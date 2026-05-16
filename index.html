@@ -68,12 +68,12 @@
 </div>
 <script>
   const LOCATIONS = [
-    { name:'الموقع الأول',  lat:21.440865, 39.791648
-
- },
-   
+    { name:'الموقع الأول',  lat:21.4160361, lng:39.8862197 },
+    { name:'الموقع الثاني', lat:21.3379899, lng:39.9946322 },
   ];
-  const RADIUS = 500;
+  const RADIUS = 500;          // ← النطاق بالمتر
+  const MAX_GPS_ERROR = 100;   // ← نرفض قراءة GPS دقتها أسوأ من 100 متر
+
   const URLS = {
     checkin:  'https://forms.gle/ykv99FbvJip7Fhp99',
     checkout: 'https://forms.gle/FsHitkRbXJizgbZJ8',
@@ -99,25 +99,33 @@
     el.className=type; el.innerHTML=msg;
   }
 
-  // ✅ الحل: نتجاهل أول قراءة GPS ونأخذ الثانية دائماً
   function getFreshLocation() {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) { reject({code:0}); return; }
 
-      let callCount = 0;
       let watchId;
+      let attempts = 0;
 
       const timer = setTimeout(() => {
         navigator.geolocation.clearWatch(watchId);
         reject({code:3});
-      }, 15000);
+      }, 20000);
 
       watchId = navigator.geolocation.watchPosition(
         pos => {
-          callCount++;
-          // تجاهل أول قراءة — دائماً قديمة ومخزنة
-          if (callCount === 1) return;
-          // القراءة الثانية هي الصحيحة
+          attempts++;
+          const acc = pos.coords.accuracy;
+
+          // تجاهل أول قراءة دائماً (موقع قديم)
+          if (attempts === 1) return;
+
+          // تجاهل أي قراءة دقتها أسوأ من 100 متر
+          if (acc > MAX_GPS_ERROR) {
+            setStatus('info', `<span class="spinner"></span> جارٍ تحسين دقة الموقع… (${Math.round(acc)} م)`);
+            return;
+          }
+
+          // قراءة جيدة — نأخذها
           clearTimeout(timer);
           navigator.geolocation.clearWatch(watchId);
           resolve(pos);
@@ -127,25 +135,34 @@
           navigator.geolocation.clearWatch(watchId);
           reject(err);
         },
-        { enableHighAccuracy:true, maximumAge:0, timeout:15000 }
+        { enableHighAccuracy:true, maximumAge:0, timeout:20000 }
       );
     });
   }
 
   async function handleAttendance(type) {
-    setStatus('info', '<span class="spinner"></span> جارٍ تحديد موقعك…');
+    setStatus('info', '<span class="spinner"></span> جارٍ تحديد موقعك بدقة…');
     try {
       const pos = await getFreshLocation();
-      const {latitude, longitude} = pos.coords;
+      const {latitude, longitude, accuracy} = pos.coords;
       const {location, inRange} = checkLocations(latitude, longitude);
+
       if (inRange) {
         setStatus('success', `✅ تم تأكيد موقعك في ${location.name}<br/>جارٍ الانتقال للنموذج…`);
         setTimeout(() => { window.location.href = URLS[type]; }, 1000);
       } else {
-        setStatus('error', `❌ أنت خارج النطاق المسموح به<br/>أقرب موقع: ${location.name} — ${location.dist} متر`);
+        setStatus('error',
+          `❌ أنت خارج النطاق المسموح به<br/>
+           أقرب موقع: ${location.name} — ${location.dist} متر<br/>
+           <small style="opacity:.7">دقة GPS: ±${Math.round(accuracy)} متر</small>`
+        );
       }
     } catch(err) {
-      const msgs = {1:'رفضت إذن الموقع. يرجى السماح من إعدادات المتصفح.',2:'تعذّر تحديد الموقع. تأكد من تفعيل GPS.',3:'استغرق تحديد الموقع وقتاً طويلاً. حاول مجدداً.'};
+      const msgs = {
+        1:'رفضت إذن الموقع. يرجى السماح من إعدادات المتصفح.',
+        2:'تعذّر تحديد الموقع. تأكد من تفعيل GPS.',
+        3:'تعذّر الحصول على موقع دقيق. تأكد من تفعيل GPS وكن في مكان مكشوف.',
+      };
       setStatus('error', '❌ ' + (msgs[err.code] || 'خطأ غير متوقع'));
     }
   }
