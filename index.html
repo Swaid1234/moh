@@ -7,169 +7,173 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --gold: #c9a84c; --gold-light: #f0d080;
-      --card-bg: rgba(10,10,10,0.75);
-      --success: #2ecc71; --danger: #e74c3c; --radius: 18px;
+      --gold: #c9a84c;
+      --gold-light: #f0d080;
+      --card-bg: rgba(10, 10, 10, 0.75);
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --radius: 18px;
     }
-    body { font-family:'Tajawal',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#111; overflow:hidden; position:relative; }
-    #bg { position:fixed; inset:0; background-image:url('YOUR_BACKGROUND_IMAGE.jpg'); background-size:cover; background-position:center; filter:brightness(0.45); z-index:0; }
-    .wrapper { position:relative; z-index:1; width:100%; max-width:700px; padding:24px 20px; display:flex; flex-direction:column; align-items:center; gap:32px; }
-    .header { text-align:center; }
-    .header h1 { font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; color:var(--gold-light); letter-spacing:1px; text-shadow:0 0 24px rgba(201,168,76,0.5); }
-    #clock { color:rgba(255,255,255,0.4); font-size:0.85rem; margin-top:6px; }
-    .cards { display:flex; gap:20px; width:100%; flex-wrap:wrap; justify-content:center; }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #bg {
+      position: fixed;
+      inset: 0;
+      background-image: url('YOUR_BACKGROUND_IMAGE.jpg'); /* ← ضع رابط صورتك هنا */
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.45);
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 700px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .header { text-align: center; }
+    .header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 900;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+      text-shadow: 0 0 24px rgba(201,168,76,0.5);
+    }
+    #clock {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.85rem;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .card {
-      flex:1 1 240px; max-width:300px; background:var(--card-bg);
-      border:1px solid rgba(201,168,76,0.25); border-radius:var(--radius);
-      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-      padding:36px 24px 28px; display:flex; flex-direction:column;
-      align-items:center; gap:18px; cursor:pointer;
-      transition:transform .28s, box-shadow .28s, border-color .28s;
-      user-select:none; position:relative; overflow:hidden;
+      flex: 1 1 240px;
+      max-width: 300px;
+      background: var(--card-bg);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: var(--radius);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 36px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      cursor: pointer;
+      transition: transform .28s, box-shadow .28s, border-color .28s;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
     }
-    .card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 0%,rgba(201,168,76,0.12),transparent 70%); pointer-events:none; }
-    .card:hover { transform:translateY(-6px) scale(1.02); border-color:var(--gold); box-shadow:0 16px 48px rgba(0,0,0,0.6),0 0 30px rgba(201,168,76,0.2); }
-    .card:active { transform:scale(0.97); }
-    .card-icon { font-size:3rem; filter:drop-shadow(0 0 12px rgba(201,168,76,0.5)); }
-    .card-title { font-size:1.35rem; font-weight:700; color:var(--gold-light); }
-    .card-sub { font-size:0.82rem; color:rgba(255,255,255,0.45); text-align:center; line-height:1.6; }
-    .card.checkin:hover  { border-color:var(--success); box-shadow:0 16px 48px rgba(0,0,0,0.6),0 0 30px rgba(46,204,113,0.25); }
-    .card.checkout:hover { border-color:var(--danger);  box-shadow:0 16px 48px rgba(0,0,0,0.6),0 0 30px rgba(231,76,60,0.25); }
-    #status { width:100%; max-width:500px; padding:14px 20px; border-radius:14px; text-align:center; font-size:0.92rem; font-weight:700; display:none; animation:fadeIn .4s ease; line-height:1.8; }
-    #status.info    { background:rgba(52,152,219,0.25); color:#74b9ff; border:1px solid rgba(52,152,219,0.4); display:block; }
-    #status.success { background:rgba(46,204,113,0.2);  color:#55efc4; border:1px solid rgba(46,204,113,0.4); display:block; }
-    #status.error   { background:rgba(231,76,60,0.2);   color:#ff7675; border:1px solid rgba(231,76,60,0.4); display:block; }
-    .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-left:8px; }
-    @keyframes spin   { to { transform:rotate(360deg); } }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(201,168,76,0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: var(--gold);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 30px rgba(201,168,76,0.2);
+    }
+    .card:active { transform: scale(0.97); }
+    .card-icon { font-size: 3rem; filter: drop-shadow(0 0 12px rgba(201,168,76,0.5)); }
+    .card-title { font-size: 1.35rem; font-weight: 700; color: var(--gold-light); }
+    .card-sub { font-size: 0.82rem; color: rgba(255,255,255,0.45); text-align: center; line-height: 1.5; }
+
+    .card.checkin:hover  { box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 30px rgba(46,204,113,0.25); border-color: var(--success); }
+    .card.checkout:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 30px rgba(231,76,60,0.25); border-color: var(--danger); }
   </style>
 </head>
 <body>
 <div id="bg"></div>
+
 <div class="wrapper">
   <div class="header">
     <h1>نظام الحضور والانصراف</h1>
     <div id="clock"></div>
   </div>
+
   <div class="cards">
-    <div class="card checkin" onclick="handleAttendance('checkin')">
+    <a class="card checkin" href="https://forms.gle/NoEXqypNxk2Jjt8a8" target="_self">
       <div class="card-icon">✅</div>
       <div class="card-title">تسجيل الحضور</div>
-      <div class="card-sub">اضغط للتحقق من موقعك<br/>والانتقال لنموذج الحضور</div>
-    </div>
-    <div class="card checkout" onclick="handleAttendance('checkout')">
+      <div class="card-sub">اضغط للانتقال لنموذج الحضور</div>
+    </a>
+    <a class="card checkout" href="https://forms.gle/5e6T1AtHJ6yM3Dp48" target="_self">
       <div class="card-icon">🚪</div>
       <div class="card-title">تسجيل الانصراف</div>
-      <div class="card-sub">اضغط للتحقق من موقعك<br/>والانتقال لنموذج الانصراف</div>
-    </div>
+      <div class="card-sub">اضغط للانتقال لنموذج الانصراف</div>
+    </a>
   </div>
-  <div id="status"></div>
 </div>
+
 <script>
-  const LOCATIONS = [
-    { name:'الموقع الأول',  lat:21.4160361, lng:39.8862197 },
-    { name:'الموقع الثاني', lat:21.3379899, lng:39.9946322 },
-  ];
-  const RADIUS = 500;          // ← النطاق بالمتر
-  const MAX_GPS_ERROR = 100;   // ← نرفض قراءة GPS دقتها أسوأ من 100 متر
 
   const URLS = {
     checkin:  'https://forms.gle/ykv99FbvJip7Fhp99',
     checkout: 'https://forms.gle/FsHitkRbXJizgbZJ8',
   };
+  // ============================================================
 
-  function getDistance(lat1,lng1,lat2,lng2) {
-    const R=6371000, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
-    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
-    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  function toMin(h, m) { return h * 60 + m; }
+
+  function isOpen(type) {
+    const now = new Date();
+    const cur = toMin(now.getHours(), now.getMinutes());
+    const s   = toMin(TIMES[type].start.h, TIMES[type].start.m);
+    const e   = toMin(TIMES[type].end.h,   TIMES[type].end.m);
+    return cur >= s && cur <= e;
   }
 
-  function checkLocations(lat,lng) {
-    let closest=null, minDist=Infinity;
-    LOCATIONS.forEach(loc => {
-      const d=Math.round(getDistance(lat,lng,loc.lat,loc.lng));
-      if(d<minDist){minDist=d;closest={...loc,dist:d};}
-    });
-    return {location:closest, inRange:minDist<=RADIUS};
+  function fmt(h, m) {
+    const s = h < 12 ? 'ص' : 'م';
+    const hh = h % 12 || 12;
+    return `${hh}:${String(m).padStart(2,'0')} ${s}`;
   }
 
-  function setStatus(type,msg) {
-    const el=document.getElementById('status');
-    el.className=type; el.innerHTML=msg;
-  }
+  function updateCards() {
+    ['checkin','checkout'].forEach(type => {
+      const card  = document.getElementById('card-' + type);
+      const badge = document.getElementById('badge-' + type);
+      const sub   = document.getElementById('sub-' + type);
+      const timeEl= document.getElementById('time-' + type);
+      const t     = TIMES[type];
+      const open  = isOpen(type);
 
-  function getFreshLocation() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) { reject({code:0}); return; }
-
-      let watchId;
-      let attempts = 0;
-
-      const timer = setTimeout(() => {
-        navigator.geolocation.clearWatch(watchId);
-        reject({code:3});
-      }, 20000);
-
-      watchId = navigator.geolocation.watchPosition(
-        pos => {
-          attempts++;
-          const acc = pos.coords.accuracy;
-
-          // تجاهل أول قراءة دائماً (موقع قديم)
-          if (attempts === 1) return;
-
-          // تجاهل أي قراءة دقتها أسوأ من 100 متر
-          if (acc > MAX_GPS_ERROR) {
-            setStatus('info', `<span class="spinner"></span> جارٍ تحسين دقة الموقع… (${Math.round(acc)} م)`);
-            return;
-          }
-
-          // قراءة جيدة — نأخذها
-          clearTimeout(timer);
-          navigator.geolocation.clearWatch(watchId);
-          resolve(pos);
-        },
-        err => {
-          clearTimeout(timer);
-          navigator.geolocation.clearWatch(watchId);
-          reject(err);
-        },
-        { enableHighAccuracy:true, maximumAge:0, timeout:20000 }
-      );
-    });
-  }
-
-  async function handleAttendance(type) {
-    setStatus('info', '<span class="spinner"></span> جارٍ تحديد موقعك بدقة…');
-    try {
-      const pos = await getFreshLocation();
-      const {latitude, longitude, accuracy} = pos.coords;
-      const {location, inRange} = checkLocations(latitude, longitude);
-
-      if (inRange) {
-        setStatus('success', `✅ تم تأكيد موقعك في ${location.name}<br/>جارٍ الانتقال للنموذج…`);
-        setTimeout(() => { window.location.href = URLS[type]; }, 1000);
-      } else {
-        setStatus('error',
-          `❌ أنت خارج النطاق المسموح به<br/>
-           أقرب موقع: ${location.name} — ${location.dist} متر<br/>
-           <small style="opacity:.7">دقة GPS: ±${Math.round(accuracy)} متر</small>`
-        );
-      }
-    } catch(err) {
-      const msgs = {
-        1:'رفضت إذن الموقع. يرجى السماح من إعدادات المتصفح.',
-        2:'تعذّر تحديد الموقع. تأكد من تفعيل GPS.',
-        3:'تعذّر الحصول على موقع دقيق. تأكد من تفعيل GPS وكن في مكان مكشوف.',
-      };
-      setStatus('error', '❌ ' + (msgs[err.code] || 'خطأ غير متوقع'));
-    }
-  }
 
   function updateClock() {
     document.getElementById('clock').textContent =
-      new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
+      new Date().toLocaleDateString('ar-SA', {weekday:'long', year:'numeric', month:'long', day:'numeric'}) +
       '  |  ' + new Date().toLocaleTimeString('ar-SA');
   }
   updateClock();
