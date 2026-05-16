@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الحضور والانصراف الذكي</title>
+    <title>نظام الحضور والانصراف الذكي الفوري</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -60,6 +60,7 @@
             font-size: 16px;
             color: #e74c3c;
             font-weight: bold;
+            min-height: 24px;
         }
         .loading {
             color: #3498db;
@@ -70,103 +71,98 @@
 
 <div class="container">
     <h2>بوابة الحضور والانصراف</h2>
-    <p>تأكد من تفعيل الـ GPS ثم اختر الإجراء المطلوب:</p>
+    <p>اضغط على الزر المطلوب لمرة واحدة وسيتم التحقق والتوجيه تلقائياً:</p>
     
     <div class="btn-group">
-        <button class="btn btn-attendance" onclick="verifyLocation('attendance')">تسجيل حضور</button>
-        <button class="btn btn-departure" onclick="verifyLocation('departure')">تسجيل انصراف</button>
+        <button class="btn btn-attendance" onclick="processCheck('attendance')">تسجيل حضور</button>
+        <button class="btn btn-departure" onclick="processCheck('departure')">تسجيل انصراف</button>
     </div>
     
     <div id="status-message"></div>
 </div>
 
 <script>
+     // ========================================================
+    // 1. إعدادات المواقع اليدوية (ضع إحداثياتك هنا)
     // ========================================================
-    // إعدادات المواقع اليدوية (قم بتعديل الإحداثيات هنا)
+    const LOCATIONS = [
+        { name: "الموقع الأول", lat: 21.41619632962374, lng:39.88574198075799 }, 
+        { name: "الموقع الثاني", lat: 21.338251, lng:39.994099  }   
+    ];
+
+    const ALLOWED_RADIUS = 3000; // المسافة المسموحة بالمتر
+
     // ========================================================
-   const LOCATIONS = [
-        { name: "الموقع الأول (الرئيسي)", lat: 21.41619632962374, lng: 39.88574198075799 }, // استبدل بالإحداثيات المعتمدة
-        { name: "الموقع الثاني (الفرع)", lat: 21.338251, lng: 39.994099 }   // استبدل بالإحداثيات المعتمدة
-   
-
-    const ALLOWED_RADIUS = 2500; // المسافة المسموحة بالمتر لكل موقع
-
-    // روابط قوقل فورم (ضع رابط الحضور ورابط الانصراف هنا)
+    // 2. روابط قوقل فورم (استبدل الروابط الوهمية بروابطك الفعالة)
+    // ========================================================
     const ATTENDANCE_FORM_URL = "https://forms.gle/6pUtD5bcLRYJV18Z8";
     const DEPARTURE_FORM_URL = "https://forms.gle/Hn2ysDaE5TP6pwn17";
     // ========================================================
-
     const statusDiv = document.getElementById('status-message');
-    let currentAction = ''; // لتحديد هل تم ضغط حضور أم انصراف
 
-    function verifyLocation(action) {
-        currentAction = action; // حفظ نوع العملية الحالية
-
+    // الدالة الرئيسية التي تنطلق بضغطة زر واحدة فقط
+    function processCheck(action) {
         if (!navigator.geolocation) {
+            statusDiv.style.color = "#e74c3c";
             statusDiv.innerHTML = "متصفحك لا يدعم خاصية تحديد الموقع الجغرافي.";
             return;
         }
 
         statusDiv.className = "loading";
-        statusDiv.innerHTML = "جاري التحقق من موقعك الحالي... يرجى الانتظار.";
+        statusDiv.innerHTML = "جاري تحديد موقعك والتحقق تلقائياً... انتظر ثواني.";
 
-        navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        });
-    }
+        // طلب الموقع مباشرة من الـ GPS وتمرير نوع العملية (حضور/انصراف) فوراً للخطوة التالية
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                // في حال نجاح المتصفح في جلب الموقع:
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                let insideAnyLocation = false;
+                let detectedLocationName = "";
 
-    function successCallback(position) {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
+                // فحص المطابقة مع المواقع
+                for (let i = 0; i < LOCATIONS.length; i++) {
+                    const distance = calculateDistance(userLat, userLng, LOCATIONS[i].lat, LOCATIONS[i].lng);
+                    if (distance <= ALLOWED_RADIUS) {
+                        insideAnyLocation = true;
+                        detectedLocationName = LOCATIONS[i].name;
+                        break; 
+                    }
+                }
 
-        let insideAnyLocation = false;
-        let detectedLocationName = "";
-
-        // فحص المسافة مع كل المواقع المحددة
-        for (let loc of LOCATIONS) {
-            const distance = calculateDistance(userLat, userLng, loc.lat, loc.lng);
-            
-            if (distance <= ALLOWED_RADIUS) {
-                insideAnyLocation = true;
-                detectedLocationName = loc.name;
-                break; 
+                if (insideAnyLocation) {
+                    statusDiv.className = "";
+                    statusDiv.style.color = "#27ae60";
+                    statusDiv.innerHTML = `تم التحقق بنجاح في [${detectedLocationName}]! جاري التوجيه فوراً...`;
+                    
+                    // التوجيه التلقائي المباشر دون أي توقف أو نوافذ
+                    if (action === 'attendance') {
+                        window.location.replace(ATTENDANCE_FORM_URL);
+                    } else if (action === 'departure') {
+                        window.location.replace(DEPARTURE_FORM_URL);
+                    }
+                } else {
+                    statusDiv.className = "";
+                    statusDiv.style.color = "#e74c3c";
+                    statusDiv.innerHTML = "عذراً، أنت خارج نطاق النطاق المسموح به للعمل.";
+                }
+            }, 
+            function(error) {
+                // في حال حدوث خطأ أو رفض الإذن
+                statusDiv.className = "";
+                statusDiv.style.color = "#e74c3c";
+                if (error.code === error.PERMISSION_DENIED) {
+                    statusDiv.innerHTML = "يرجى إعطاء صلاحية الـ GPS للمتصفح لتتمكن من التسجيل.";
+                } else {
+                    statusDiv.innerHTML = "فشل تحديد موقعك، تأكد من تفعيل الـ GPS في جهازك.";
+                }
+            }, 
+            {
+                enableHighAccuracy: true, // إجبار الجهاز على استخدام الـ GPS الفعلي لأعلى دقة
+                timeout: 8000,
+                maximumAge: 0
             }
-        }
-
-        if (insideAnyLocation) {
-            statusDiv.style.color = "#27ae60";
-            statusDiv.innerHTML = `تم التحقق بنجاح في [${detectedLocationName}]! جاري التوجيه...`;
-            
-            // التوجيه بناءً على الزر المضغوط (حضور أو انصراف)
-            if (currentAction === 'attendance') {
-                window.location.href = ATTENDANCE_FORM_URL;
-            } else if (currentAction === 'departure') {
-                window.location.href = DEPARTURE_FORM_URL;
-            }
-        } else {
-            statusDiv.style.color = "#e74c3c";
-            statusDiv.innerHTML = "عذراً، أنت خارج نطاق جميع مواقع العمل المعتمدة لا يمكنك التسجيل.";
-        }
-    }
-
-    function errorCallback(error) {
-        statusDiv.style.color = "#e74c3c";
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                statusDiv.innerHTML = "يجب عليك السماح للموقع بالوصول إلى الـ GPS لإتمام العملية.";
-                break;
-            case error.POSITION_UNAVAILABLE:
-                statusDiv.innerHTML = "معلومات الموقع غير متوفرة حالياً.";
-                break;
-            case error.TIMEOUT:
-                statusDiv.innerHTML = "انتهت مهلة طلب تحديد الموقع.";
-                break;
-            default:
-                statusDiv.innerHTML = "حدث خطأ غير معروف.";
-                break;
-        }
+        );
     }
 
     // دالة حساب المسافة بالمتر (Haversine Formula)
