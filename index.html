@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام الحضور والانصراف - المشاعر المقدسة</title>
     <style>
+        /* إعدادات الخلفية العامة */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* ------------------------------------------------------- */
             /* ضع رابط صورتك الخلفية هنا بدلاً من الرابط التجريبي بالأسفل */
-            background-image: url('https://haj.gov.sa/_next/image?url=https%3A%2F%2Fhaj.gov.sa%2Fs-core%2F-%2Fmedia%2FProject%2FHAJJ%2FIMAGES%2FHAJJ-Season%2F33.png%3Fh%3D1964%26iar%3D0%26w%3D5760%26hash%3D38E198558D91D8FE53D5DE53EA558C8B&w=3840&q=75'); 
-            /* ------------------------------------------------------- */
+            background-image: url('https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=1200'); 
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -19,89 +18,161 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
-        /* خلفية داكنة خفيفة فوق الصورة لتحسين وضوح النص */
+
+        /* طبقة داكنة فوق الصورة لضمان وضوح النصوص */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.45);
             z-index: 1;
         }
+
+        /* حاوية التصميم الرئيسية مع تأثيرات الانتقال والظهور */
         .container {
             position: relative;
             z-index: 2;
-            background-color: rgba(255, 255, 255, 0.92); /* حاوية بيضاء شبه شفافة أنيقة */
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background-color: rgba(255, 255, 255, 0.94); 
+            padding: 40px 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
             text-align: center;
             max-width: 400px;
             width: 90%;
+            /* تأثير الحركة عند التحميل الأول للبطاقة */
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
+
         h2 {
             color: #2c3e50;
             margin-bottom: 10px;
-            font-size: 24px;
+            font-size: 26px;
+            font-weight: 700;
         }
+
         p {
-            color: #555;
+            color: #666;
             font-size: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
-        /* إعدادات الصفحات */
-        #page-1 { display: block; } /* تظهر أولاً */
-        #page-2 { display: none; }  /* مخفية في البداية */
+
+        /* التحكم في الصفحات مع إضافة تأثير حركة خاص بكل صفحة عند تفعيلها */
+        #page-1 { display: block; }
+        #page-2 { display: none; }
+
+        .fade-active {
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
 
         .btn-vertical, .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
         }
+        
         .btn-group {
             flex-direction: row;
         }
+
+        /* التصميم الأساسي للأزرار مع الترانزميشن النظيف */
         .btn {
             color: white;
             border: none;
-            padding: 14px;
+            padding: 15px;
             font-size: 18px;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            /* الترانزميشن هنا يجعل الحركة ناعمة عند مرور الفأرة وضغط الزر */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            position: relative;
+            top: 0;
         }
-        /* ألوان أزرار الصفحة الأولى (المشاعر) */
-        .btn-arfa { background-color: #16a085; }
-        .btn-arfa:hover { background-color: #117a65; }
-        .btn-mina { background-color: #2980b9; }
-        .btn-mina:hover { background-color: #2471a3; }
-        
-        /* ألوان أزرار الصفحة الثانية (الإجراءات) */
-        .btn-attendance { background-color: #2ecc71; flex: 1; }
-        .btn-attendance:hover { background-color: #27ae60; }
-        .btn-departure { background-color: #e67e22; flex: 1; }
-        .btn-departure:hover { background-color: #d35400; }
 
+        /* تفاعل الأزرار عند الحركية (Hover) */
+        .btn:hover {
+            top: -4px; /* يرتفع الزر قليلاً للأعلى */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25); /* تعميق الظل */
+            transform: scale(1.02); /* تكبير خفيف جداً */
+        }
+
+        /* تفاعل الأزرار عند الضغط الفعلي (Click) */
+        .btn:active {
+            top: -1px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: scale(0.99);
+        }
+
+        /* ألوان أزرار المشاعر */
+        .btn-arfa { background: linear-gradient(135deg, #1abc9c, #16a085); }
+        .btn-mina { background: linear-gradient(135deg, #3498db, #2980b9); }
+        
+        /* ألوان أزرار الإجراءات */
+        .btn-attendance { background: linear-gradient(135deg, #2ecc71, #27ae60); flex: 1; }
+        .btn-departure { background: linear-gradient(135deg, #e67e22, #d35400); flex: 1; }
+
+        /* رسائل الحالة مع حركات تنبيهية */
         #status-message {
-            margin-top: 20px;
+            margin-top: 25px;
             font-size: 15px;
             color: #34495e;
             font-weight: bold;
             min-height: 24px;
+            transition: all 0.3s ease;
         }
-        .error-text { color: #e74c3c !important; }
-        .loading-text { color: #3498db !important; }
+        
+        .error-text { 
+            color: #e74c3c !important; 
+            animation: shake 0.4s ease-in-out; /* حركة اهتزاز خفيفة عند الخطأ */
+        }
+        
+        .loading-text { 
+            color: #3498db !important; 
+        }
         
         .location-badge {
             display: inline-block;
-            background-color: #34495e;
+            background: #34495e;
             color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
+            padding: 6px 18px;
+            border-radius: 25px;
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* ================= مفاتيح حركات الـ Animation ================= */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
         }
     </style>
 </head>
@@ -110,9 +181,9 @@
 <div class="container">
     
     <!-- ================= الصفحة الأولى: اختيار المشعر ================= -->
-    <div id="page-1">
+    <div id="page-1" class="fade-active">
         <h2>بوابة التحقق الجغرافي</h2>
-        <p>يرجى اختيار مشعر تواجدك الحالي للتحقق تلقائياً:</p>
+        <p>مرحباً بك، يرجى اختيار مشعر تواجدك الحالي للتحقق من هويتك المكانية:</p>
         
         <div class="btn-vertical">
             <button class="btn btn-arfa" onclick="selectLocation(0)">مشعر عرفة</button>
@@ -125,7 +196,7 @@
     <div id="page-2">
         <h2>بوابة التحضير الرقمية</h2>
         <div id="active-location" class="location-badge"></div>
-        <p>اختر الإجراء المطلوب ليتم تسجيلك فوراً:</p>
+        <p>تم تأكيد موقعك بنجاح، اختر الإجراء المطلوب ليتم تسجيلك فوراً:</p>
         
         <div class="btn-group">
             <button class="btn btn-attendance" onclick="redirectToForm('attendance')">تسجيل حضور</button>
@@ -136,29 +207,27 @@
 </div>
 
 <script>
-    // ========================================================
-    // 1. إعدادات الإحداثيات اليدوية (عرفة ومنى)
+    ========================================================
+    // 1. إعدادات المواقع اليدوية (ضع إحداثياتك هنا)
     // ========================================================
     const LOCATIONS = [
-        { name: "مشعر عرفة", lat:21.338251, lng:39.994099 }, // موقع 0 (عرفة)
-        { name: "مشعر منى", lat:21.41619632962374, lng:39.88574198075799 }   // موقع 1 (منى)
+        { name: "الموقع الأول", lat: 21.41619632962374, lng:39.88574198075799 }, 
+        { name: "الموقع الثاني", lat: 21.338251, lng:39.994099  }   
     ];
 
-    const ALLOWED_RADIUS = 3000; // المسافة المسموحة بالمتر حول الإحداثيات
+    const ALLOWED_RADIUS = 50000; // المسافة المسموحة بالمتر
 
     // ========================================================
-    // 2. روابط قوقل فورم الخاصة بك
+    // 2. روابط قوقل فورم (استبدل الروابط الوهمية بروابطك الفعالة)
     // ========================================================
     const ATTENDANCE_FORM_URL = "https://forms.gle/6pUtD5bcLRYJV18Z8";
     const DEPARTURE_FORM_URL = "https://forms.gle/Hn2ysDaE5TP6pwn17";
     // ========================================================
-
     const statusDiv = document.getElementById('status-message');
     const page1 = document.getElementById('page-1');
     const page2 = document.getElementById('page-2');
     const activeLocationBadge = document.getElementById('active-location');
 
-    // الدالة التي تنطلق عند اختيار مشعر من الصفحة الأولى
     function selectLocation(index) {
         const targetLocation = LOCATIONS[index];
 
@@ -171,33 +240,34 @@
         statusDiv.className = "loading-text";
         statusDiv.innerHTML = `جاري مطابقة إحداثياتك مع [${targetLocation.name}]...`;
 
-        // طلب الـ GPS للتحقق
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude;
 
-                // حساب المسافة بين الموظف والمشعر الذي اختاره فقط
                 const distance = calculateDistance(userLat, userLng, targetLocation.lat, targetLocation.lng);
 
                 if (distance <= ALLOWED_RADIUS) {
-                    // تطابق ناجح: إخفاء الصفحة الأولى وإظهار الصفحة الثانية فوراً
                     statusDiv.innerHTML = "";
+                    
+                    // التبديل بين الصفحات بجمالية كلاسيكية وسلسة
                     page1.style.display = "none";
                     page2.style.display = "block";
-                    activeLocationBadge.innerHTML = `الموقع الحالي المتأصل منه: ${targetLocation.name}`;
+                    page2.classList.add("fade-active"); // تفعيل حركية الظهور للصفحة الثانية
+                    
+                    activeLocationBadge.innerHTML = `الموقع الحالي المعتمد: ${targetLocation.name}`;
                 } else {
-                    // فشل التطابق الجغرافي
+                    // تشغيل حركة الاهتزاز عند الخطأ لتنبيه المستخدم بصرياً
                     statusDiv.className = "error-text";
-                    statusDiv.innerHTML = `عذراً، نظام الـ GPS يوضح أنك لست متواجداً في نطاق ${targetLocation.name}.`;
+                    statusDiv.innerHTML = `عذراً، أنت لست في النطاق الجغرافي لـ ${targetLocation.name}.`;
                 }
             },
             function(error) {
                 statusDiv.className = "error-text";
                 if (error.code === error.PERMISSION_DENIED) {
-                    statusDiv.innerHTML = "فضلاً، قم بالسماح للمتصفح بالوصول للـ GPS لإتمام التحقق.";
+                    statusDiv.innerHTML = "فضلاً، اسمح بالوصول للـ GPS لإتمام التحقق الرقمي.";
                 } else {
-                    statusDiv.innerHTML = "فشل التقاط الإحداثيات. تأكد من تشغيل الموقع بجهازك.";
+                    statusDiv.innerHTML = "فشل التقاط الإحداثيات، تأكد من تشغيل الموقع بالهاتف.";
                 }
             },
             {
@@ -208,7 +278,6 @@
         );
     }
 
-    // التوجيه الفوري المباشر في الصفحة الثانية
     function redirectToForm(action) {
         if (action === 'attendance') {
             window.location.replace(ATTENDANCE_FORM_URL);
@@ -217,7 +286,7 @@
         }
     }
 
-    // دالة حساب المسافة بالمتر (Haversine Formula)
+    // دالة حساب المسافة (Haversine)
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371e3; 
         const phi1 = lat1 * Math.PI / 180;
@@ -235,4 +304,4 @@
 </script>
 
 </body>
-</html>
+</html>  
