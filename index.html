@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الحضور والانصراف الذكي الفوري</title>
+    <title>نظام الحضور والانصراف - مشاعر مقدسة</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -26,6 +26,14 @@
         h2 {
             color: #333;
             margin-bottom: 20px;
+        }
+        /* إعدادات صفحة الفحص الأولية */
+        #checking-page {
+            display: block; /* تظهر أولاً */
+        }
+        /* إعدادات صفحة الأزرار (مخفية في البداية) */
+        #portal-page {
+            display: none; 
         }
         .btn-group {
             display: flex;
@@ -58,69 +66,95 @@
         #status-message {
             margin-top: 20px;
             font-size: 16px;
-            color: #e74c3c;
-            font-weight: bold;
-            min-height: 24px;
-        }
-        .loading {
             color: #3498db;
+            font-weight: bold;
+        }
+        .error-text {
+            color: #e74c3c !important;
+        }
+        .success-text {
+            color: #27ae60 !important;
+        }
+        .location-badge {
+            display: inline-block;
+            background-color: #34495e;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>بوابة الحضور والانصراف</h2>
-    <p>اضغط على الزر المطلوب لمرة واحدة وسيتم التحقق والتوجيه تلقائياً:</p>
     
-    <div class="btn-group">
-        <button class="btn btn-attendance" onclick="processCheck('attendance')">تسجيل حضور</button>
-        <button class="btn btn-departure" onclick="processCheck('departure')">تسجيل انصراف</button>
+    <!-- 1. صفحة الفحص التلقائي عند الدخول -->
+    <div id="checking-page">
+        <h2>بوابة التحقق من الموقع</h2>
+        <p>جاري فحص تواجدك في النطاق الجغرافي لـ (عرفة / منى)...</p>
+        <div id="status-message">الرجاء السماح بصلاحية الـ GPS إذا طُلبت منك...</div>
     </div>
-    
-    <div id="status-message"></div>
+
+    <!-- 2. صفحة الحضور والانصراف (تفتح فقط بعد نجاح الفحص) -->
+    <div id="portal-page">
+        <h2>أهلاً بك في نظام التحضير</h2>
+        <div id="location-name" class="location-badge"></div>
+        <p style="margin-top: 15px;">اضغط على الخيار المطلوب لتسجيل الحضور أو الانصراف فوراً:</p>
+        
+        <div class="btn-group">
+            <button class="btn btn-attendance" onclick="redirectToForm('attendance')">تسجيل حضور</button>
+            <button class="btn btn-departure" onclick="redirectToForm('departure')">تسجيل انصراف</button>
+        </div>
+    </div>
+
 </div>
 
 <script>
-     // ========================================================
-    // 1. إعدادات المواقع اليدوية (ضع إحداثياتك هنا)
+    // ========================================================
+    // 1. إعدادات الإحداثيات اليدوية (إحداثيات عرفة ومحيط منى)
     // ========================================================
     const LOCATIONS = [
-        { name: "الموقع الأول", lat: 21.41619632962374, lng:39.88574198075799 }, 
-        { name: "الموقع الثاني", lat: 21.338251, lng:39.994099  }   
+        { name: "مشعر عرفة", lat:  21.338251, lng:39.994099  }, // يمكنك تعديل الإحداثيات الدقيقة لمقرك هنا
+        { name: "مشعر منى", lat: 21.41619632962374, lng:39.88574198075799 }   // يمكنك تعديل الإحداثيات الدقيقة لمقرك هنا
     ];
 
-    const ALLOWED_RADIUS = 3000; // المسافة المسموحة بالمتر
+    const ALLOWED_RADIUS = 3000; // المسافة المسموحة بالمتر (مثلاً 500 متر لضمان تغطية جيدة في المشاعر)
 
     // ========================================================
-    // 2. روابط قوقل فورم (استبدل الروابط الوهمية بروابطك الفعالة)
+    // 2. روابط قوقل فورم
     // ========================================================
     const ATTENDANCE_FORM_URL = "https://forms.gle/6pUtD5bcLRYJV18Z8";
     const DEPARTURE_FORM_URL = "https://forms.gle/Hn2ysDaE5TP6pwn17";
     // ========================================================
-    const statusDiv = document.getElementById('status-message');
 
-    // الدالة الرئيسية التي تنطلق بضغطة زر واحدة فقط
-    function processCheck(action) {
+    const statusDiv = document.getElementById('status-message');
+    const checkingPage = document.getElementById('checking-page');
+    const portalPage = document.getElementById('portal-page');
+    const locationBadge = document.getElementById('location-name');
+
+    // تشغيل الفحص تلقائياً بمجرد فتح الصفحة
+    window.onload = function() {
+        startAutomaticCheck();
+    };
+
+    function startAutomaticCheck() {
         if (!navigator.geolocation) {
-            statusDiv.style.color = "#e74c3c";
+            statusDiv.className = "error-text";
             statusDiv.innerHTML = "متصفحك لا يدعم خاصية تحديد الموقع الجغرافي.";
             return;
         }
 
-        statusDiv.className = "loading";
-        statusDiv.innerHTML = "جاري تحديد موقعك والتحقق تلقائياً... انتظر ثواني.";
-
-        // طلب الموقع مباشرة من الـ GPS وتمرير نوع العملية (حضور/انصراف) فوراً للخطوة التالية
+        // طلب الموقع تلقائياً وبأعلى دقة
         navigator.geolocation.getCurrentPosition(
             function(position) {
-                // في حال نجاح المتصفح في جلب الموقع:
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude;
                 let insideAnyLocation = false;
                 let detectedLocationName = "";
 
-                // فحص المطابقة مع المواقع
+                // مطابقة موقع الموظف مع عرفة أو منى
                 for (let i = 0; i < LOCATIONS.length; i++) {
                     const distance = calculateDistance(userLat, userLng, LOCATIONS[i].lat, LOCATIONS[i].lng);
                     if (distance <= ALLOWED_RADIUS) {
@@ -131,38 +165,39 @@
                 }
 
                 if (insideAnyLocation) {
-                    statusDiv.className = "";
-                    statusDiv.style.color = "#27ae60";
-                    statusDiv.innerHTML = `تم التحقق بنجاح في [${detectedLocationName}]! جاري التوجيه فوراً...`;
-                    
-                    // التوجيه التلقائي المباشر دون أي توقف أو نوافذ
-                    if (action === 'attendance') {
-                        window.location.replace(ATTENDANCE_FORM_URL);
-                    } else if (action === 'departure') {
-                        window.location.replace(DEPARTURE_FORM_URL);
-                    }
+                    // إذا كان بالموقع: اخفِ صفحة الفحص واظهر صفحة الحضور والانصراف فوراً
+                    checkingPage.style.display = "none";
+                    portalPage.style.display = "block";
+                    locationBadge.innerHTML = `موقعك الحالي: ${detectedLocationName}`;
                 } else {
-                    statusDiv.className = "";
-                    statusDiv.style.color = "#e74c3c";
-                    statusDiv.innerHTML = "عذراً، أنت خارج نطاق النطاق المسموح به للعمل.";
+                    // إذا كان خارج النطاق
+                    statusDiv.className = "error-text";
+                    statusDiv.innerHTML = "عذراً، أنت خارج النطاق الجغرافي المسموح به لـ (عرفة / منى). لا يمكنك التحضير.";
                 }
             }, 
             function(error) {
-                // في حال حدوث خطأ أو رفض الإذن
-                statusDiv.className = "";
-                statusDiv.style.color = "#e74c3c";
+                statusDiv.className = "error-text";
                 if (error.code === error.PERMISSION_DENIED) {
-                    statusDiv.innerHTML = "يرجى إعطاء صلاحية الـ GPS للمتصفح لتتمكن من التسجيل.";
+                    statusDiv.innerHTML = "يجب إعطاء صلاحية الـ GPS للمتصفح لتتمكن المنظومة من التحقق والدخول.";
                 } else {
-                    statusDiv.innerHTML = "فشل تحديد موقعك، تأكد من تفعيل الـ GPS في جهازك.";
+                    statusDiv.innerHTML = "فشل تحديد موقعك، تأكد من تفعيل الـ GPS في جهازك وتحديث الصفحة.";
                 }
             }, 
             {
-                enableHighAccuracy: true, // إجبار الجهاز على استخدام الـ GPS الفعلي لأعلى دقة
-                timeout: 8000,
+                enableHighAccuracy: true,
+                timeout: 10000,
                 maximumAge: 0
             }
         );
+    }
+
+    // دالة التوجيه الفوري عند ضغط زر حضور أو انصراف
+    function redirectToForm(action) {
+        if (action === 'attendance') {
+            window.location.replace(ATTENDANCE_FORM_URL);
+        } else if (action === 'departure') {
+            window.location.replace(DEPARTURE_FORM_URL);
+        }
     }
 
     // دالة حساب المسافة بالمتر (Haversine Formula)
