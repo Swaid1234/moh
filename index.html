@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الحضور والانصراف - المشاعر المقدسة</title>
+    <title>بوابة المشاعر الرقمية - حج 1447هـ</title>
     <style>
-        /* إعدادات الخلفية العامة المتوافقة مع الوضع الداكن */
-        body {
+        /* الخطوط وتصفير الإعدادات */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* ضع رابط صورتك الخلفية هنا بدلاً من الرابط التجريبي بالأسفل */
-            background-image: url('https://haj.gov.sa/_next/image?url=https%3A%2F%2Fhaj.gov.sa%2Fs-core%2F-%2Fmedia%2FProject%2FHAJJ%2FIMAGES%2FHAJJ-Season%2F33.png%3Fh%3D1964%26iar%3D0%26w%3D5760%26hash%3D38E198558D91D8FE53D5DE53EA558C8B&w=3840&q=75''); 
+        }
+
+        /* الخلفية العامة للموقع بالصورة المطلوبة */
+        body {
+            background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20241127/pngtree-holy-hajj-and-umrah-pilgrimage-at-kaaba-in-mecca-for-eid-image_16673644.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -17,236 +23,250 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
             overflow: hidden;
-            background-color: #0b0c10; 
+            position: relative;
+            background-color: #060709;
         }
 
-        /* طبقة داكنة عميقة فوق الصورة لتعزيز الهوية البصرية للـ Dark Mode */
+        /* طبقة الـ Blur الفاخرة للخلفية فقط */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle, rgba(10, 11, 14, 0.5) 0%, rgba(10, 11, 14, 0.85) 100%);
+            background: radial-gradient(circle, rgba(6, 7, 9, 0.45) 0%, rgba(6, 7, 9, 0.85) 100%);
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
             z-index: 1;
         }
 
-        /* حاوية التصميم الفاخرة بالوضع الداكن الزجاجي (Dark Glassmorphism) */
+        /* مربع اختيار المشعر - نقي وبدون بلور نهائياً لتجنب مشاكل الجوال */
         .container {
             position: relative;
             z-index: 2;
-            background: rgba(20, 22, 26, 0.65); 
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.07); 
-            padding: 45px 35px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1);
+            background: rgba(13, 17, 23, 0.95); 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
             text-align: center;
-            max-width: 400px;
-            width: 90%;
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            max-width: 420px;
+            width: 92%;
+            overflow: hidden; 
+            
+            will-change: transform, opacity;
+            animation: superFadeIn 0.5s ease-out forwards;
+        }
+
+        /* الحاوية الداخلية للمحتوى */
+        .card-content {
+            padding: 35px 25px 45px 25px;
+        }
+
+        /* قسم الصورة المدمجة أعلى الكرت (يتغير برمجياً) */
+        .featured-image-holder {
+            position: relative;
+            width: 100%;
+            height: 170px;
+            background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20241127/pngtree-holy-hajj-and-umrah-pilgrimage-at-kaaba-in-mecca-for-eid-image_16673644.jpg');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background-image 0.4s ease-in-out; /* حركة ناعمة عند تغير الصورة */
+        }
+
+        /* تظليل ناعم فوق الصورة لضمان وضوح الشعار والنصوص */
+        .featured-image-holder::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; right: 0; top: 0;
+            background: linear-gradient(to bottom, rgba(13, 17, 23, 0) 0%, rgba(13, 17, 23, 0.85) 100%);
+        }
+
+        /* شعار السنة الهجرية */
+        .hajj-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            z-index: 3;
+            font-size: 11px;
+            color: #d4af37; 
+            background: #0d1117;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            border: 1px solid rgba(212, 175, 55, 0.4);
         }
 
         h2 {
             color: #ffffff;
-            margin-bottom: 8px;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin-bottom: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(180deg, #ffffff 0%, #bdc3c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 15px;
-            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 14px;
+            margin-bottom: 30px;
             line-height: 1.6;
         }
 
-        /* التحكم في الصفحات والحركات */
+        /* إعدادات الصفحات والتنقل السريع */
         #page-1 { display: block; }
         #page-2 { display: none; }
 
         .fade-active {
-            animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            will-change: transform, opacity;
+            animation: pageTransition 0.4s ease-out forwards;
         }
 
         .btn-vertical, .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
         
         .btn-group {
             flex-direction: row;
         }
 
-        /* الأزرار بالوضع الداكن الفخم والمستقبلي */
+        /* الأزرار الفاخرة */
         .btn {
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 16px;
-            font-size: 17px;
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 18px;
+            font-size: 16px;
+            border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            top: 0;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            -webkit-transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
         }
 
-        /* تأثير التمرير واللمعان للأزرار (Hover) */
-        .btn:hover {
-            top: -4px;
-            transform: scale(1.02);
-            border-color: rgba(255, 255, 255, 0.2);
+        /* استجابة سريعة جداً عند اللمس في الجوال */
+        .btn:hover, .btn:active {
+            transform: translateY(-2px);
         }
 
-        .btn:active {
-            top: -1px;
-            transform: scale(0.99);
+        .btn-arfa:hover, .btn-arfa:active { 
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            border-color: #00b4d8;
+            box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
         }
 
-        /* تدرجات داكنة مخصصة للمشاعر (عرفة ومنى) */
-        .btn-arfa { 
-            background: linear-gradient(135deg, #1f2833, #12161c); 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-        .btn-arfa:hover { 
-            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.25); 
-            color: #00b4d8; 
-        }
-
-        .btn-mina { 
-            background: linear-gradient(135deg, #1f2833, #12161c); 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-        .btn-mina:hover { 
-            box-shadow: 0 10px 25px rgba(114, 9, 183, 0.25); 
-            color: #7209b7; 
+        .btn-mina:hover, .btn-mina:active { 
+            background: linear-gradient(135deg, #7209b7, #560bad);
+            border-color: #7209b7;
+            box-shadow: 0 10px 20px rgba(114, 9, 183, 0.3);
         }
         
-        /* تدرجات حيوية وفخمة لأزرار الحضور والانصراف بالصفحة الثانية */
         .btn-attendance { 
-            background: linear-gradient(135deg, #0f4c5c, #00b4d8); 
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(56, 239, 125, 0.15)); 
+            border: 1px solid rgba(56, 239, 125, 0.4);
+            color: #38ef7d;
             flex: 1; 
         }
-        .btn-attendance:hover { box-shadow: 0 10px 25px rgba(0, 180, 216, 0.4); }
+        .btn-attendance:hover, .btn-attendance:active { 
+            background: linear-gradient(135deg, #11998e, #38ef7d); 
+            color: #ffffff;
+            box-shadow: 0 10px 20px rgba(56, 239, 125, 0.25);
+        }
 
         .btn-departure { 
-            background: linear-gradient(135deg, #6f1d1b, #bb3e03); 
+            background: linear-gradient(135deg, rgba(234, 141, 141, 0.15), rgba(187, 62, 3, 0.15)); 
+            border: 1px solid rgba(234, 141, 141, 0.4);
+            color: #ea8d8d;
             flex: 1; 
         }
-        .btn-departure:hover { box-shadow: 0 10px 25px rgba(187, 62, 3, 0.4); }
+        .btn-departure:hover, .btn-departure:active { 
+            background: linear-gradient(135deg, #ea8d8d, #bb3e03); 
+            color: #ffffff;
+            box-shadow: 0 10px 20px rgba(234, 141, 141, 0.25);
+        }
 
-        /* ستايل زر العودة والمحاذاة للخلف بالوضع الداكن الفخم */
+        /* زر العودة */
         .btn-back {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: none;
             color: rgba(255, 255, 255, 0.5);
-            margin-top: 25px;
-            padding: 12px;
+            margin-top: 35px;
             font-size: 14px;
-            box-shadow: none;
-            border-radius: 12px;
-            width: 100%; /* تمديد الزر ليأخذ عرض الحاوية بشكل متناسق */
-        }
-        .btn-back:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: none;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
         }
 
-        /* رسائل الحالة مع توهج النيون المناسب للوضع الداكن */
-        #status-message {
-            margin-top: 25px;
-            font-size: 15px;
-            color: rgba(255,255,255,0.7);
-            font-weight: 500;
-            min-height: 24px;
-            transition: all 0.3s ease;
-        }
-        
-        .error-text { 
-            color: #ff4d4d !important; 
-            text-shadow: 0 0 15px rgba(255, 77, 77, 0.5);
-            animation: shake 0.4s ease-in-out; 
-        }
-        
-        .loading-text { 
-            color: #00b4d8 !important; 
-            text-shadow: 0 0 15px rgba(0, 180, 216, 0.4);
-        }
-        
-        /* بادج أنيق للموقع النشط */
         .location-badge {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(0, 180, 216, 0.08);
             color: #00b4d8;
-            padding: 6px 20px;
-            border-radius: 30px;
-            font-size: 14px;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 13px;
             margin-bottom: 25px;
-            font-weight: 600;
-            border: 1px solid rgba(0, 180, 216, 0.3);
-            text-shadow: 0 0 10px rgba(0, 180, 216, 0.2);
+            font-weight: 700;
+            border: 1px solid rgba(0, 180, 216, 0.25);
         }
 
-        /* مفاتيح الحركات الرياضية */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
+        /* حركات ناعمة وخطية متوافقة تماماً مع متصفحات الجوال */
+        @keyframes superFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
+        @keyframes pageTransition {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- قسم الصورة الذي يتغير برمجياً حسب نوع المشعر -->
+    <div id="card-image" class="featured-image-holder">
+        <div class="hajj-badge">المشاعر المقدسة ١٤٤٧هـ</div>
+    </div>
     
-    <!-- ================= الصفحة الأولى: اختيار المشعر ================= -->
-    <div id="page-1" class="fade-active">
-        <h2>بوابة التحقق الجغرافي</h2>
-        <p>مرحباً بك، يرجى اختيار مشعر تواجدك الحالي للتحقق من هويتك المكانية:</p>
-        
-        <div class="btn-vertical">
-            <button class="btn btn-arfa" onclick="selectLocation(0)">مشعر عرفة</button>
-            <button class="btn btn-mina" onclick="selectLocation(1)">مشعر منى</button>
-        </div>
-        <div id="status-message"></div>
-    </div>
-
-    <!-- ================= الصفحة الثانية: الحضور والانصراف ================= -->
-    <div id="page-2">
-        <h2>بوابة التحضير الرقمية</h2>
-        <div id="active-location" class="location-badge"></div>
-        <p>تم تأكيد موقعك بنجاح، اختر الإجراء المطلوب ليتم تسجيلك فوراً:</p>
-        
-        <div class="btn-group">
-            <button class="btn btn-attendance" onclick="redirectToForm('attendance')">تسجيل حضور</button>
-            <button class="btn btn-departure" onclick="redirectToForm('departure')">تسجيل انصراف</button>
+    <div class="card-content">
+        <!-- ================= الصفحة الأولى: اختيار المشعر ================= -->
+        <div id="page-1" class="fade-active">
+            <h2>بوابة التحقق الذكي</h2>
+            <p>مرحباً بك في المنظومة الرقمية للحج، يرجى اختيار مشعر تواجدك الحالي لبدء مطابقة الإحداثيات:</p>
+            
+            <div class="btn-vertical">
+                <button class="btn btn-arfa" onclick="navigateToPage2('arfa')">مَشعر عرفات</button>
+                <button class="btn btn-mina" onclick="navigateToPage2('mina')">مَشعر مِنى</button>
+            </div>
         </div>
 
-        <!-- زر العودة إلى الصفحة السابقة المبرمج والمحدث -->
-        <button class="btn btn-back" onclick="goBack()">العودة إلى الصفحة السابقة</button>
-    </div>
+        <!-- ================= الصفحة الثانية: الحضور والانصراف ================= -->
+        <div id="page-2">
+            <h2>بوابة التحضير الرقمية</h2>
+            <div id="active-location" class="location-badge"></div>
+            <p>تم إثبات هويتك المكانية بنجاح عبر الأقمار الصناعية، يرجى تسجيل الإجراء المطلوب:</p>
+            
+            <div class="btn-group">
+                <button class="btn btn-attendance" onclick="redirectToForm('attendance')">إثبات حضور</button>
+                <button class="btn btn-departure" onclick="redirectToForm('departure')">إثبات انصراف</button>
+            </div>
 
+            <button class="btn btn-back" onclick="goBack()">← العودة لتغيير الموقع</button>
+        </div>
+    </div>
 </div>
 
 <script>
-       // ========================================================
+    // روابط الصور المخصصة لكل صفحة داخل المربع
+    const IMAGES = {
+        default: "https://png.pngtree.com/thumb_back/fh260/background/20241127/pngtree-holy-hajj-and-umrah-pilgrimage-at-kaaba-in-mecca-for-eid-image_16673644.jpg", // صورة الكعبة الرئيسية
+        arfa: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1000&auto=format&fit=crop", // صورة جبل الرحمة في عرفات
+        mina: "https://images.unsplash.com/photo-1629013233306-03f6f1bf2dfc?q=80&w=1000&auto=format&fit=crop"   // صورة مخيمات منى البيضاء المطورة
+    };
+    // ========================================================
     // 1. إعدادات الإحداثيات اليدوية (عرفة ومنى)
     // ========================================================
     const LOCATIONS = [
@@ -262,96 +282,44 @@
     const ATTENDANCE_FORM_URL = "https://forms.gle/6pUtD5bcLRYJV18Z8";
     const DEPARTURE_FORM_URL = "https://forms.gle/Hn2ysDaE5TP6pwn17";
     // ========================================================
-
-    const statusDiv = document.getElementById('status-message');
     const page1 = document.getElementById('page-1');
     const page2 = document.getElementById('page-2');
+    const cardImage = document.getElementById('card-image');
     const activeLocationBadge = document.getElementById('active-location');
 
-    function selectLocation(index) {
-        const targetLocation = LOCATIONS[index];
+    // دالة الانتقال الفوري وتبديل الصورة بناءً على المشعر المختار
+    function navigateToPage2(type) {
+        page1.style.display = "none";
+        page1.classList.remove("fade-active");
 
-        if (!navigator.geolocation) {
-            statusDiv.className = "error-text";
-            statusDiv.innerHTML = "متصفحك لا يدعم نظام تحديد المواقع الجغرافية.";
-            return;
+        page2.style.display = "block";
+        page2.classList.add("fade-active"); 
+        
+        if (type === 'arfa') {
+            cardImage.style.backgroundImage = `url('${IMAGES.arfa}')`;
+            activeLocationBadge.innerHTML = `📍 النطاق النشط: مشعر عرفات`;
+        } else if (type === 'mina') {
+            cardImage.style.backgroundImage = `url('${IMAGES.mina}')`;
+            activeLocationBadge.innerHTML = `📍 النطاق النشط: مشعر مِنى`;
         }
-
-        statusDiv.className = "loading-text";
-        statusDiv.innerHTML = `جاري مطابقة إحداثياتك مع [${targetLocation.name}]...`;
-
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
-
-                const distance = calculateDistance(userLat, userLng, targetLocation.lat, targetLocation.lng);
-
-                if (distance <= ALLOWED_RADIUS) {
-                    statusDiv.innerHTML = "";
-                    
-                    page1.style.display = "none";
-                    page2.style.display = "block";
-                    page2.classList.add("fade-active"); 
-                    
-                    activeLocationBadge.innerHTML = `الموقع الحالي المعتمد: ${targetLocation.name}`;
-                } else {
-                    statusDiv.className = "error-text";
-                    statusDiv.innerHTML = `عذراً، أنت لست في النطاق الجغرافي لـ ${targetLocation.name}.`;
-                }
-            },
-            function(error) {
-                statusDiv.className = "error-text";
-                if (error.code === error.PERMISSION_DENIED) {
-                    statusDiv.innerHTML = "فضلاً، اسمح بالوصول للـ GPS لإتمام التحقق الرقمي.";
-                } else {
-                    statusDiv.innerHTML = "فشل التقاط الإحداثيات، تأكد من تشغيل الموقع بالهاتف.";
-                }
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
-        );
     }
 
-    // دالة العودة إلى الصفحة السابقة
+    // دالة العودة للصفحة الأولى وإرجاع الصورة الأصلية
     function goBack() {
         page2.style.display = "none";
         page2.classList.remove("fade-active");
         
         page1.style.display = "block";
         page1.classList.add("fade-active");
-        
-        // مسح رسائل الفحص القديمة لتهيئة الصفحة من جديد
-        statusDiv.innerHTML = "";
-        statusDiv.className = "";
+
+        // إعادة الصورة الافتراضية (الكعبة)
+        cardImage.style.backgroundImage = `url('${IMAGES.default}')`;
     }
 
+    // إعادة التوجيه للنماذج
     function redirectToForm(action) {
-        if (action === 'attendance') {
-            window.location.replace(ATTENDANCE_FORM_URL);
-        } else if (action === 'departure') {
-            window.location.replace(DEPARTURE_FORM_URL);
-        }
-    }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371e3; 
-        const phi1 = lat1 * Math.PI / 180;
-        const phi2 = lat2 * Math.PI / 180;
-        const deltaPhi = (lat2 - lat1) * Math.PI / 180;
-        const deltaLambda = (lon2 - lon1) * Math.PI / 180;
-
-        const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
-                  Math.cos(phi1) * Math.cos(phi2) *
-                  Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c; 
+        window.location.replace(action === 'attendance' ? ATTENDANCE_FORM_URL : DEPARTURE_FORM_URL);
     }
 </script>
-
 </body>
 </html>
