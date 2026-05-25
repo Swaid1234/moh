@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>سواعد — نظام العمل الإضافي</title>
+  <title>شركة سواعد الضيافة — نظام العمل الإضافي</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -38,7 +38,9 @@ const ADMIN_KEY = "ot_admin";
 const SUPERVISORS_KEY = "ot_supervisors";
 const REQUESTS_KEY = "ot_requests";
 const DEFAULT_ADMIN_PASS = "admin1234";
-const COMPANY = "سواعد";
+const ADMIN_USER = "swaed_admin"; // ← غيّر اسم المستخدم هنا
+const ADMIN_PASSWORD = "admin1234";  // ← غيّر كلمة المرور هنا
+const COMPANY = "شركة سواعد الضيافة";
 
 const store = {
   get: async (k) => { try { const r = await window.storage.get(k,true); return r?JSON.parse(r.value):null; } catch{return null;} },
@@ -408,8 +410,7 @@ function ReqCard({req, onClick, delay=0}) {
 }
 
 /* ─── PDF EXPORT ─────────────────────────────────────────────────────────────── */
-const exportPDF = null; // replaced by modal
-const buildPDF = (req) => {
+const exportPDF = (req) => {
   const hours = calcHours(req.form.startTime, req.form.endTime);
   const sigBox = (title, imgSrc, name, date, action) => `
     <div class="sig-box">
@@ -430,7 +431,10 @@ const buildPDF = (req) => {
   <div class="sigs">${sigBox('توقيع الموظف',req.employeeSignature,req.form.employeeName,req.submittedAt,'approve')}${sigBox('توقيع المشرف',req.supervisorSignature,req.supervisorName||'',req.supervisorAt,req.supervisorAction)}${sigBox('اعتماد الإدارة',req.managementSignature,'الإدارة',req.managementAt,req.managementAction)}</div>
   <div class="footer"><span>شركة ${COMPANY} للخدمات المهنية</span><span>صادر إلكترونياً</span></div>
   </body></html>`;
-  return html;
+  const blob = new Blob([html], {type: 'text/html'});
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 };
 
 /* ═══════════════════════ MAIN APP ═══════════════════════════════════════════ */
@@ -442,7 +446,6 @@ function App() {
   const [supervisors, setSups]  = useState({});
   const [session, setSession]   = useState(null);
   const [selected, setSel]      = useState(null);
-  const [pdfReq, setPdfReq]      = useState(null);
   const [adminTab, setAdminTab] = useState("all");
   const [supTab, setSupTab]     = useState("pending");
 
@@ -491,8 +494,7 @@ function App() {
   };
 
   const adminLogin=async()=>{
-    const cfg=await store.get(ADMIN_KEY);
-    if(loginPass!==(cfg?.password||DEFAULT_ADMIN_PASS)){setErr("كلمة المرور غير صحيحة");return;}
+    if(loginUser!==ADMIN_USER||loginPass!==ADMIN_PASSWORD){setErr("بيانات الدخول غير صحيحة");return;}
     setSession({role:"admin"}); setErr(""); setView("admin_dashboard");
   };
 
@@ -554,19 +556,7 @@ function App() {
           <p style={{fontSize:13,color:"var(--text-3)",letterSpacing:1}}>OVERTIME MANAGEMENT SYSTEM</p>
         </div>
 
-        {reqList.length>0&&(
-          <div className="page-enter item-2" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:32}}>
-            {[
-              {label:"الكل",     v:reqList.length,      color:"var(--text)"},
-              {label:"معلقة",    v:pendingReqs.length+waitingMgmt.length, color:"#f59e0b"},
-              {label:"معتمدة",   v:approvedReqs.length, color:"var(--green)"},
-              {label:"مرفوضة",  v:rejectedReqs.length, color:"var(--red)"},
-            ].map((s,i)=>(
-              <div key={i} className="stat-chip" style={{animationDelay:`${0.05+i*0.07}s`}}>
-                <div style={{fontSize:22,fontWeight:700,color:s.color,marginBottom:2}}>{s.v}</div>
-                <div style={{fontSize:10,color:"var(--text-3)",fontWeight:500}}>{s.label}</div>
-              </div>
-            ))}
+        
           </div>
         )}
 
@@ -712,9 +702,9 @@ function App() {
           <div style={{fontSize:18,fontWeight:700,color:"var(--text)"}}>بوابة الإدارة</div>
           <div style={{fontSize:12,color:"var(--text-3)",marginTop:4}}>صلاحيات كاملة — اعتماد ورفض</div>
         </div>
-        <div style={{marginBottom:16}}>
-          <Label>كلمة المرور</Label>
-          <input type="password" className="ot-input" placeholder="••••••••" value={loginPass} onChange={e=>setLoginPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&adminLogin()}/>
+        <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:16}}>
+          <div><Label>اسم المستخدم</Label><input className="ot-input" placeholder="username" value={loginUser} onChange={e=>setLoginUser(e.target.value)}/></div>
+          <div><Label>كلمة المرور</Label><input type="password" className="ot-input" placeholder="••••••••" value={loginPass} onChange={e=>setLoginPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&adminLogin()}/></div>
         </div>
         <Err msg={error}/>
         <div style={{marginTop:16}}><Btn full size="lg" onClick={adminLogin}>دخول</Btn></div>
@@ -829,7 +819,7 @@ function App() {
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
             <Btn variant="ghost" size="sm" onClick={()=>setView("admin_dashboard")}>← رجوع</Btn>
             <Badge status={r.status}/>
-            <Btn variant="success" size="sm" onClick={()=>setPdfReq(r)}>📄 PDF</Btn>
+            <Btn variant="success" size="sm" onClick={()=>exportPDF(r)}>📄 PDF</Btn>
           </div>
 
           <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:12,padding:"4px 16px",marginBottom:16}}>
@@ -918,7 +908,7 @@ function App() {
           {(r.status==="approved"||r.status==="rejected")&&(
             <div style={{marginTop:12}}>
               {r.managementNote&&<div style={{background:"rgba(52,211,153,0.07)",border:"1px solid rgba(52,211,153,0.2)",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"var(--green)"}}><strong>ملاحظة الإدارة:</strong> {r.managementNote}</div>}
-              <Btn variant="success" full size="lg" onClick={()=>setPdfReq(r)}>📄 تصدير PDF رسمي — سواعد</Btn>
+              <Btn variant="success" full size="lg" onClick={()=>exportPDF(r)}>📄 تصدير PDF رسمي — سواعد</Btn>
             </div>
           )}
         </Card>
@@ -1016,28 +1006,6 @@ function App() {
           </div>
         </Card>
       </Page>
-    );
-  }
-
-  /* ── PDF MODAL ──────────────────────────────────────────────────────────── */
-  if(pdfReq) {
-    const html = buildPDF(pdfReq);
-    return (
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",flexDirection:"column",alignItems:"center",padding:"20px 16px",overflow:"auto"}}>
-        <div style={{display:"flex",gap:10,marginBottom:16,flexShrink:0}}>
-          <button onClick={()=>setPdfReq(null)} style={{padding:"9px 20px",background:"rgba(255,255,255,0.1)",color:"#fff",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,cursor:"pointer",fontFamily:"var(--ff)",fontSize:13,fontWeight:600}}>← إغلاق</button>
-          <button onClick={()=>{
-            const iframe = document.getElementById("ot-pdf-iframe");
-            iframe.contentWindow.print();
-          }} style={{padding:"9px 22px",background:"linear-gradient(135deg,#c9a46e,#e8b870)",color:"#1a0e00",border:"none",borderRadius:8,cursor:"pointer",fontFamily:"var(--ff)",fontSize:13,fontWeight:700}}>🖨️ طباعة / حفظ PDF</button>
-        </div>
-        <iframe
-          id="ot-pdf-iframe"
-          srcDoc={html}
-          style={{width:"100%",maxWidth:800,height:"calc(100vh - 100px)",borderRadius:12,border:"none",background:"#fff"}}
-          title="PDF Preview"
-        />
-      </div>
     );
   }
 
